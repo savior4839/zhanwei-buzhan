@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工位占卜所</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif;}
+:root{
+    --bg:#FAF9FC;
+    --p-l:#E8E2F4;
+    --p-m:#C9BFE3;
+    --p-d:#4A405E;
+    --gold:#D4C295;
+    --shadow:0 8px 28px rgba(74,64,94,0.09);
+}
+body{
+    background:var(--bg);
+    color:var(--p-d);
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+}
+/* 背景星光装饰 */
+.star-bg{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+}
+.star{
+    position:absolute;
+    width:3px;height:3px;
+    background:var(--p-m);
+    border-radius:50%;
+    opacity:0.6;
+    animation:twinkle 4s infinite ease-in-out;
+}
+@keyframes twinkle{
+    0%,100%{opacity:0.3;}
+    50%{opacity:0.8;}
+}
+.wrap{
+    position:relative;
+    z-index:1;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+}
+.box{
+    width:100%;
+    max-width:520px;
+    text-align:center;
+}
+.page{display:none;animation:fadeIn 0.45s ease-out;}
+.page.active{display:block;}
+@keyframes fadeIn{
+    from{opacity:0;transform:translateY(16px);}
+    to{opacity:1;transform:translateY(0);}
+}
+h1{font-size:34px;font-weight:500;margin-bottom:10px;}
+.sub{font-size:15px;opacity:0.7;margin-bottom:48px;}
+.btn{
+    background:var(--p-l);
+    color:var(--p-d);
+    border:none;
+    padding:16px 46px;
+    border-radius:999px;
+    font-size:17px;
+    cursor:pointer;
+    transition:0.3s;
+}
+.btn:hover{background:var(--p-m);}
+.btn-sm{padding:10px 22px;font-size:14px;}
+.btn-group{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:24px;}
+
+/* 页面1 首页 */
+.home-deco{
+    width:140px;height:140px;
+    margin:0 auto 32px;
+    position:relative;
+}
+.crystal{
+    width:90px;height:90px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #f3f0fa, var(--p-l));
+    margin:0 auto;
+    box-shadow:0 0 20px rgba(201,191,227,0.4);
+}
+.compass-line{
+    position:absolute;inset:0;
+    border:1px dashed var(--p-m);
+    border-radius:50%;
+}
+
+/* 页面2 摇签仪式 */
+.tube-wrap{margin-bottom:32px;}
+.tube{
+    width:110px;height:170px;
+    background:linear-gradient(180deg, var(--p-l), #ddd6ee);
+    border-radius:12px 12px 20px 20px;
+    margin:0 auto;
+    position:relative;
+    overflow:hidden;
+    border:1px solid var(--p-m);
+}
+.tube.shake{animation:shake 0.6s ease-in-out;}
+@keyframes shake{
+    0%,100%{transform:rotate(0deg);}
+    25%{transform:rotate(-6deg);}
+    75%{transform:rotate(6deg);}
+}
+.chi{
+    position:absolute;
+    width:8px;height:70px;
+    background:#fff;
+    border-radius:4px;
+    left:50%;top:10px;
+    transform:translateX(-50%);
+}
+.chi:nth-child(2){left:32%;height:64px;top:16px;}
+.chi:nth-child(3){left:68%;height:66px;top:14px;}
+.tip-ritual{margin-bottom:24px;font-size:14px;opacity:0.75;}
+
+/* 页面3 签卡 */
+.card{
+    background:var(--p-l);
+    border-radius:26px;
+    padding:36px 28px;
+    box-shadow:var(--shadow);
+    border:1px solid rgba(212,194,149,0.35);
+    text-align:left;
+}
+.card .tag{
+    display:inline-block;
+    background:rgba(255,255,255,0.5);
+    padding:4px 10px;
+    border-radius:99px;
+    font-size:13px;
+    margin-bottom:14px;
+}
+.card h2{font-size:24px;margin-bottom:12px;}
+.card .verse{font-size:17px;font-style:italic;margin-bottom:16px;line-height:1.6;}
+.card .desc{font-size:14px;opacity:0.82;line-height:1.7;margin-bottom:20px;}
+.card-block{
+    background:rgba(255,255,255,0.45);
+    border-radius:14px;
+    padding:14px;
+    margin-bottom:12px;
+}
+.card-block h4{font-size:14px;margin-bottom:6px;opacity:0.85;}
+.card-block p{font-size:14px;line-height:1.6;}
+
+/* 页面4 开运补给 */
+.supply-box{
+    background:var(--p-l);
+    border-radius:26px;
+    padding:32px 26px;
+    box-shadow:var(--shadow);
+    text-align:left;
+}
+.supply-item{
+    background:rgba(255,255,255,0.45);
+    padding:14px;
+    border-radius:14px;
+    margin-bottom:12px;
+}
+.supply-item h4{margin-bottom:6px;font-size:14px;opacity:0.85;}
+.supply-item p{font-size:14px;line-height:1.6;}
+.footer-small{margin-top:40px;font-size:13px;opacity:0.55;}
+</style>
+</head>
+<body>
+<div class="star-bg" id="starBox"></div>
+<div class="wrap">
+    <div class="box">
+        <!-- Page1 首页 -->
+        <div class="page active" id="page1">
+            <div class="home-deco">
+                <div class="compass-line"></div>
+                <div class="crystal"></div>
+            </div>
+            <h1>工位占卜所</h1>
+            <p class="sub">抽一签，解锁今日工位运势</p>
+            <button class="btn" onclick="goPage(2)">开始占卜</button>
+            <p class="footer-small">1024鬼点子计划 · 脑洞趣味赛道</p>
+        </div>
+
+        <!-- Page2 摇签仪式 -->
+        <div class="page" id="page2">
+            <p class="tip-ritual">静下心，凝神片刻，摇动签筒</p>
+            <div class="tube-wrap">
+                <div class="tube" id="tube">
+                    <div class="chi"></div>
+                    <div class="chi"></div>
+                    <div class="chi"></div>
+                </div>
+            </div>
+            <button class="btn" id="shakeBtn">摇动签筒</button>
+        </div>
+
+        <!-- Page3 签卡详情 -->
+        <div class="page" id="page3">
+            <div class="card">
+                <div class="tag" id="tagLine"></div>
+                <h2 id="cardName"></h2>
+                <div class="verse" id="cardVerse"></div>
+                <div class="desc" id="cardDesc"></div>
+                <div class="card-block">
+                    <h4>✅ 今日宜</h4>
+                    <p id="cardYi"></p>
+                </div>
+                <div class="card-block">
+                    <h4>❌ 今日忌</h4>
+                    <p id="cardJi"></p>
+                </div>
+                <div class="card-block">
+                    <h4>🔮 开运建议</h4>
+                    <p id="cardTip"></p>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-sm" onclick="goPage(4)">查看开运补给</button>
+                    <button class="btn btn-sm" id="copyShare">复制分享</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page4 开运补给站 -->
+        <div class="page" id="page4">
+            <div class="supply-box">
+                <h2 style="margin-bottom:18px;text-align:center;">✨ 运势补给站</h2>
+                <div class="supply-item">
+                    <h4>🎨 开运颜色</h4>
+                    <p id="succColor"></p>
+                </div>
+                <div class="supply-item">
+                    <h4>☕ 开运饮品</h4>
+                    <p id="succDrink"></p>
+                </div>
+                <div class="supply-item">
+                    <h4>📜 运势锦囊</h4>
+                    <p id="succNote"></p>
+                </div>
+                <div class="supply-item">
+                    <h4>🔮 工位小预言</h4>
+                    <p id="succProphecy"></p>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-sm" onclick="goPage(1)">重新占卜</button>
+                    <button class="btn btn-sm" onclick="goPage(3)">返回签卡</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 背景星星
+const starBox = document.getElementById('starBox');
+for(let i=0;i<24;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    s.style.left = Math.random()*100 + '%';
+    s.style.top = Math.random()*100 + '%';
+    s.style.animationDelay = Math.random()*3+'s';
+    starBox.appendChild(s);
+}
+
+// 签库
+const pool = [
+    {
+        tag:"第01签 · 大吉",
+        name:"灵感爆棚",
+        verse:"思绪如泉涌，方案自己长出来。",
+        desc:"今天的大脑像开了柔光，适合处理重要创意。",
+        yi:"写脚本、想选题、开脑暴会",
+        ji:"把灵感压到明天",
+        tip:"把第一个想法记下来，别等“更完美”。",
+        color:"淡紫",
+        drink:"热美式",
+        note:"不必追求惊艳，流畅本身就是力量。",
+        prophecy:"你会冒出一个让自己眼前一亮的点子。"
+    },
+    {
+        tag:"第02签 · 顺遂",
+        name:"剪辑神速",
+        verse:"素材听话，导出顺利，审片少修改。",
+        desc:"今天的剪辑节奏会很顺，适合集中完成成片。",
+        yi:"剪片、调色、整理素材",
+        ji:"边剪边刷无关视频",
+        tip:"先把音乐定下来，画面会更有方向。",
+        color:"浅灰蓝",
+        drink:"奶绿",
+        note:"慢慢来，稳定输出远胜过仓促赶工。",
+        prophecy:"一段素材卡点一次就成功。"
+    },
+    {
+        tag:"第03签 · 顺遂",
+        name:"BUG退散",
+        verse:"异常消散，报错绕行，调试一遍就稳。",
+        desc:"今天适合解决技术问题，很多障碍会比想象中简单。",
+        yi:"查问题、修代码、做测试",
+        ji:"一开始就怀疑人生",
+        tip:"把错误信息读三遍，答案就在里面。",
+        color:"薄荷浅绿",
+        drink:"柠檬水",
+        note:"BUG只是暂时迷路，不是专门针对你。",
+        prophecy:"纠结很久的问题，突然找到解法。"
+    },
+    {
+        tag:"第04签 · 趣味",
+        name:"咖啡续命",
+        verse:"状态靠咖啡，快乐靠自己。",
+        desc:"今天不一定爆炸输出，但可以稳稳撑到下班。",
+        yi:"喝杯热饮，慢慢推进",
+        ji:"硬撑到头晕",
+        tip:"下午三点给自己5分钟休息。",
+        color:"暖奶咖",
+        drink:"拿铁",
+        note:"允许自己节奏放缓，休息不是偷懒。",
+        prophecy:"今天的咖啡格外好喝。"
+    },
+    {
+        tag:"第05签 · 趣味",
+        name:"摸鱼大吉",
+        verse:"表面安静，灵魂自由。",
+        desc:"今天适合适度放空，不是偷懒，是给大脑充电。",
+        yi:"散步、听歌、整理桌面",
+        ji:"一边摸鱼一边焦虑",
+        tip:"摸鱼前先完成一件小事。",
+        color:"浅鹅黄",
+        drink:"乌龙茶",
+        note:"大脑也需要留白，空白处才会生长灵感。",
+        prophecy:"短暂放空之后，思路会变清晰。"
+    },
+    {
+        tag:"第06签 · 大吉",
+        name:"欧气附体",
+        verse:"随手一选，结果都还不错。",
+        desc:"今天的运气值偏高，适合做一些带选择的事。",
+        yi:"做决定、提交方案、参加抽奖",
+        ji:"过度犹豫",
+        tip:"相信第一感觉。",
+        color:"浅桃粉",
+        drink:"果茶",
+        note:"你本身就具备把事情做好的能力。",
+        prophecy:"提交的内容收到正向反馈。"
+    },
+    {
+        tag:"第07签 · 顺遂",
+        name:"开会顺利",
+        verse:"会议节奏清楚，结论比废话多。",
+        desc:"今天的沟通运不错，适合表达观点。",
+        yi:"发言、对齐需求、确认目标",
+        ji:"只听不说",
+        tip:"提前写3个要点。",
+        color:"浅青灰",
+        drink:"大麦茶",
+        note:"清晰表达，比滔滔不绝更重要。",
+        prophecy:"沟通对齐顺利，没有额外新增需求。"
+    },
+    {
+        tag:"第08签 · 提醒",
+        name:"低调稳定",
+        verse:"今天不追求惊艳，只求稳定交付。",
+        desc:"适合做确定性任务，不适合冒太大的新尝试。",
+        yi:"整理、核对、执行计划",
+        ji:"临时大改方案",
+        tip:"把任务拆小，完成一件划一件。",
+        color:"米白",
+        drink:"温水",
+        note:"平稳落地，也是一种很棒的胜利。",
+        prophecy:"繁琐核对工作不会出错。"
+    },
+    {
+        tag:"第09签 · 提醒",
+        name:"好运缓冲",
+        verse:"事情慢一点没关系，别被节奏带跑。",
+        desc:"今天不是最差的一天，只是需要更耐心。",
+        yi:"深呼吸、重新排序、先做重要的一件",
+        ji:"同时开很多线程",
+        tip:"关闭无关通知10分钟。",
+        color:"灰紫",
+        drink:"菊花水",
+        note:"进度慢不等于失败，稳住心态最重要。",
+        prophecy:"混乱的事情会慢慢理顺。"
+    },
+    {
+        tag:"第10签 · 隐藏彩蛋",
+        name:"今日零工作",
+        verse:"事项自动顺延，工位异常清净。",
+        desc:"这是一支非常罕见的签，代表难得的松弛窗口。",
+        yi:"喝好茶，看窗外，允许自己慢下来",
+        ji:"主动找事做",
+        tip:"别把“清闲”当成罪过。",
+        color:"云白",
+        drink:"喜欢的任意饮品",
+        note:"难得的闲暇，请安心收下这份馈赠。",
+        prophecy:"不会收到紧急消息。"
+    }
+];
+
+let current = null;
+const pages = ['page1','page2','page3','page4'];
+function goPage(n){
+    pages.forEach(p=>document.getElementById(p).classList.remove('active'));
+    document.getElementById('page'+n).classList.add('active');
+}
+
+const shakeBtn = document.getElementById('shakeBtn');
+const tube = document.getElementById('tube');
+shakeBtn.onclick = function(){
+    tube.classList.add('shake');
+    shakeBtn.disabled = true;
+    setTimeout(()=>{
+        tube.classList.remove('shake');
+        current = pool[Math.floor(Math.random()*pool.length)];
+        renderCard();
+        goPage(3);
+        shakeBtn.disabled = false;
+    },700);
+}
+
+function renderCard(){
+    document.getElementById('tagLine').innerText = current.tag;
+    document.getElementById('cardName').innerText = current.name;
+    document.getElementById('cardVerse').innerText = current.verse;
+    document.getElementById('cardDesc').innerText = current.desc;
+    document.getElementById('cardYi').innerText = current.yi;
+    document.getElementById('cardJi').innerText = current.ji;
+    document.getElementById('cardTip').innerText = current.tip;
+
+    document.getElementById('succColor').innerText = current.color;
+    document.getElementById('succDrink').innerText = current.drink;
+    document.getElementById('succNote').innerText = current.note;
+    document.getElementById('succProphecy').innerText = current.prophecy;
+}
+
+document.getElementById('copyShare').onclick = function(){
+    const txt = `【工位占卜所】${current.tag}\n${current.name}\n判词：${current.verse}\n${current.desc}\n✅宜：${current.yi}\n🔮开运建议：${current.tip}`;
+    navigator.clipboard.writeText(txt).then(()=>alert("运势文案已复制！"));
+}
+</script>
+</body>
+</html>
